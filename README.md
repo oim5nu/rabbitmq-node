@@ -1,0 +1,1 @@
+This Project demo how to use rabbitmq in different patterns like workerQueue, Pub/Sub etc

@@ -1,0 +1,41 @@
+//import amqp from 'amqplib';
+import amqp from 'amqplib/callback_api';
+
+const CONN_URL = process.env.AMQP_URL;
+
+let ch = null;
+amqp.connect(CONN_URL, function (err, conn) {
+   conn.createChannel(function (err, channel) {
+      ch = channel;
+   });
+});
+export const publishToQueue = async (queueName, data) => {
+   ch.sendToQueue(queueName, Buffer.from(data));
+}
+
+process.on('exit', (code) => {
+   ch.close();
+   console.log(`Closing rabbitmq channel`);
+});
+
+// let conn = null;
+// export const publishToQueue = async (queueName, data) => {
+//    //console.log('queueName, data', queueName, data);
+
+//    try {
+//       conn = await amqp.connect(CONN_URL);
+//       const channel = await conn.createChannel();
+//       const ok = await channel.assertQueue(queueName, { durable: true });
+//       console.log('ok', ok);
+//       if(ok) {
+//          const result = await channel.sendToQueue(queueName, Buffer.from(data), { persistent: true });  
+//          console.log('result', result);
+//       }
+//       return channel.close();
+//    } catch(error) {
+//       console.log(error);
+//       throw error;
+//    } finally {
+//       if(conn) conn.close();
+//    }
+// }
